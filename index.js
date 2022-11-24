@@ -10,6 +10,21 @@ const app = express();
 const port = process.env.PORT || 5000; 
 
 
+//custom middlewares: 
+function verifyJWT(req, res, next){
+      const authHeader = req.headers.authorization; 
+      if(!authHeader){
+         res.status(401).send({message: "unauthorized access"}); 
+      }
+      const token = authHeader.split(' ')[0];
+      jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, function(error, decoded){
+         if(error){
+            res.status(403).send({message: 'forbidden access'}); 
+         }
+         req.decoded = decoded; 
+         next(); 
+      } )
+}
 
 //middleware here: 
 app.use(cors()); 
@@ -24,13 +39,29 @@ console.log(uri);
 async function run(){
    try{
       const categoryCollection = client.db('ProductKo').collection('categories'); 
-      
+      const userCollections = client.db('ProductKo').collection('users'); 
+     //jwt token creation : 
+     app.post('/jwt', async(req, res)=>{
+         const user = req.body; 
+         const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '7d'}); 
+         console.log(token); 
+         res.send(token); 
+     }); 
+     
       //create a get api for  categories: 
       app.get('/categories', async(req,res)=>{
          const query = {}; 
          const categories = await categoryCollection.find(query).toArray();
          res.send(categories); 
       })
+
+
+      // create a user posting api: 
+      // app.post('/users', async(req, res)=>{
+      //    const user = req.body; 
+      //    const result = await userCollections.insertOne(user); 
+      //    res.send(result); 
+      // })
    }
    finally{
 
