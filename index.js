@@ -57,11 +57,11 @@ async function run(){
 
 
       // create a user posting api: 
-      // app.post('/users', async(req, res)=>{
-      //    const user = req.body; 
-      //    const result = await userCollections.insertOne(user); 
-      //    res.send(result); 
-      // })
+      app.post('/users', async(req, res)=>{
+         const user = req.body; 
+         const result = await userCollections.insertOne(user); 
+         res.send(result); 
+      })
    }
    finally{
 
