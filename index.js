@@ -1,9 +1,7 @@
 const express = require('express'); 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors'); 
 const jwt = require('jsonwebtoken'); 
-const { application } = require('express');
-
 require('dotenv').config(); 
 
 const app = express(); 
@@ -14,12 +12,12 @@ const port = process.env.PORT || 5000;
 function verifyJWT(req, res, next){
       const authHeader = req.headers.authorization; 
       if(!authHeader){
-         res.status(401).send({message: "unauthorized access"}); 
+         return   res.status(401).send({message: "unauthorized access"}); 
       }
       const token = authHeader.split(' ')[0];
       jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, function(error, decoded){
          if(error){
-            res.status(403).send({message: 'forbidden access'}); 
+           return  res.status(403).send({message: 'forbidden access'}); 
          }
          req.decoded = decoded; 
          next(); 
@@ -35,18 +33,22 @@ app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.4nkvsmn.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-console.log(uri); 
 async function run(){
    try{
       const categoryCollection = client.db('ProductKo').collection('categories'); 
       const userCollections = client.db('ProductKo').collection('users'); 
+      const productsCollection = client.db('ProductKo').collection('product'); 
      //jwt token creation : 
-     app.post('/jwt', async(req, res)=>{
-         const user = req.body; 
-         const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '7d'}); 
-         console.log(token); 
-         res.send(token); 
-     }); 
+     app.get('/jwt', async(req, res)=>{
+      const email = req.query.email; 
+      const query = {email}
+      const user = await userCollections.findOne(query); 
+      if(user){
+         const  token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'7d'}); 
+         return res.send({token: token}); 
+      }
+       res.status(401).send({message: 'unauthorized access'}); 
+     })
      
       //create a get api for  categories: 
       app.get('/categories', async(req,res)=>{
@@ -61,6 +63,41 @@ async function run(){
          const user = req.body; 
          const result = await userCollections.insertOne(user); 
          res.send(result); 
+      })
+      
+      // create an api for get all users : 
+      app.get('/users', async(req, res)=> {
+         const query = {}; 
+         const users = await userCollections.find(query).toArray(); 
+         res.send(users); 
+      })
+
+
+      // create a post api by using post method: 
+      app.post('/products', async(req, res)=>{
+         const product = req.body; 
+         console.log(product); 
+         const result = await productsCollection.insertOne(product); 
+         res.send(result); 
+      })
+
+      // app.put('/products', async(req,res)=>{
+      //    const query = {}; 
+      //    const updatedoc = {
+      //       $set:{
+      //          description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. '
+      //       }
+      //    }
+      //    const result = productsCollection.updateMany(query, updatedoc, {upsert: true})
+      //    res.send(result); 
+      // })
+      //get api for category based post : 
+      app.get('/categories/:id', async(req,res)=>{
+         const id = req.params.id; 
+         console.log(id); 
+         const query = {category: id}; 
+         const products = await productsCollection.find(query).toArray(); 
+         res.send(products);
       })
    }
    finally{
