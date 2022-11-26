@@ -91,6 +91,8 @@ async function run(){
          res.send(product); 
       })
 
+   
+
 
       //create a get api for user base by query email: 
       app.get('/products', async(req ,res)=>{
@@ -99,6 +101,7 @@ async function run(){
          const  products = await productsCollection.find(query).toArray(); 
          res.send(products); 
       })
+      
       
       //create a put api for user advertisement update : 
       app.put('/products/:id', async(req ,res)=>{
@@ -117,16 +120,35 @@ async function run(){
          res.send(result); 
       }) 
 
+      //delete api for products : 
+      app.delete('/products/:id', async(req, res)=>{
+         const id = req.params.id; 
+         const query = {_id: ObjectId(id)}; 
+         const result = await productsCollection.deleteOne(query); 
+         res.send(result); 
+      })
+
       //get api for advertised products:
       app.get('/advertised', async(req, res)=>{
-         const query = {isAdvertised: {
-            $eq : true
-         }}; 
+         const query = {
+            $and: [
+               {
+                  isAdvertised: {
+                     $eq : true
+                  }, 
+         }, 
+               {
+                  paymentStatus: {
+                     $ne: true
+                  }
+               }
+            ]
+         }; 
          const products = await productsCollection.find(query).toArray(); 
          res.send(products); 
       })
 
-
+      
 
       // app.put('/products', async(req,res)=>{
       //    const query = {}; 
