@@ -1,5 +1,5 @@
 const express = require('express'); 
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId, ObjectID } = require('mongodb');
 const cors = require('cors'); 
 const jwt = require('jsonwebtoken'); 
 require('dotenv').config(); 
@@ -53,7 +53,7 @@ async function run(){
      
       //create a get api for  categories: 
       app.get('/categories', async(req,res)=>{
-         const query = {isBooked: false}; 
+         const query= {}; 
          const categories = await categoryCollection.find(query).toArray();
          res.send(categories); 
       })
@@ -92,6 +92,41 @@ async function run(){
       })
 
 
+      //create a get api for user base by query email: 
+      app.get('/products', async(req ,res)=>{
+         const email = req.query.email; 
+         const query  = {email: email}; 
+         const  products = await productsCollection.find(query).toArray(); 
+         res.send(products); 
+      })
+      
+      //create a put api for user advertisement update : 
+      app.put('/products/:id', async(req ,res)=>{
+         const id = req.params.id;
+         const isAdvertised = req.body.isAdvertised; 
+         console.log(isAdvertised); 
+         const query = {_id: ObjectId(id)}; 
+         const updatedDoc = {
+             $set: {
+               isAdvertised: isAdvertised, 
+             }
+         }
+         const options = {upsert : true}; 
+
+         const result = await productsCollection.updateOne(query, updatedDoc, options); 
+         res.send(result); 
+      }) 
+
+      //get api for advertised products:
+      // app.get('/advertised', async(req, res)=>{
+      //    const query = {isAdvertised: {
+      //       $eq : true
+      //    }}; 
+      //    const products = await productsCollection.find(query).toArray(); 
+      //    res.send(products); 
+      // })
+
+
 
       // app.put('/products', async(req,res)=>{
       //    const query = {}; 
@@ -107,11 +142,21 @@ async function run(){
       //get api for category based post : 
       app.get('/categories/:id', async(req,res)=>{
          const id = req.params.id;  
-         const query = {category: id}; 
+         const query = {$and:[
+            {
+               category:id
+            }, 
+            {
+               isBooked: {
+                  $ne: true, 
+               }
+            }
+         ]}; 
          const products = await productsCollection.find(query).toArray(); 
          res.send(products);
       })
-
+      
+      
   
      
 
@@ -134,7 +179,8 @@ async function run(){
          console.log(product); 
          res.send(result); 
       })
-
+     
+   
 
    
    }
