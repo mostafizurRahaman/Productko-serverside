@@ -118,13 +118,13 @@ async function run(){
       }) 
 
       //get api for advertised products:
-      // app.get('/advertised', async(req, res)=>{
-      //    const query = {isAdvertised: {
-      //       $eq : true
-      //    }}; 
-      //    const products = await productsCollection.find(query).toArray(); 
-      //    res.send(products); 
-      // })
+      app.get('/advertised', async(req, res)=>{
+         const query = {isAdvertised: {
+            $eq : true
+         }}; 
+         const products = await productsCollection.find(query).toArray(); 
+         res.send(products); 
+      })
 
 
 
