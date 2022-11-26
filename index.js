@@ -38,6 +38,7 @@ async function run(){
       const categoryCollection = client.db('ProductKo').collection('categories'); 
       const userCollections = client.db('ProductKo').collection('users'); 
       const productsCollection = client.db('ProductKo').collection('product'); 
+      const bookingsCollection = client.db("ProductKo").collection('bookings'); 
      //jwt token creation : 
      app.get('/jwt', async(req, res)=>{
       const email = req.query.email; 
@@ -52,7 +53,7 @@ async function run(){
      
       //create a get api for  categories: 
       app.get('/categories', async(req,res)=>{
-         const query = {}; 
+         const query = {isBooked: false}; 
          const categories = await categoryCollection.find(query).toArray();
          res.send(categories); 
       })
@@ -81,6 +82,17 @@ async function run(){
          res.send(result); 
       })
 
+      // create single product getting api: 
+      app.get('/products/:id', async(req, res)=>{
+         const id = req.params.id; 
+         const query = {_id: ObjectId(id)};
+         console.log(id); 
+         const  product = await productsCollection.findOne(query); 
+         res.send(product); 
+      })
+
+
+
       // app.put('/products', async(req,res)=>{
       //    const query = {}; 
       //    const updatedoc = {
@@ -91,14 +103,40 @@ async function run(){
       //    const result = productsCollection.updateMany(query, updatedoc, {upsert: true})
       //    res.send(result); 
       // })
+
       //get api for category based post : 
       app.get('/categories/:id', async(req,res)=>{
-         const id = req.params.id; 
-         console.log(id); 
+         const id = req.params.id;  
          const query = {category: id}; 
          const products = await productsCollection.find(query).toArray(); 
          res.send(products);
       })
+
+  
+     
+
+      // create a post api for bookings : 
+      app.post('/bookings', async(req, res)=>{
+         const booking = req.body; 
+         const result = await bookingsCollection.insertOne(booking);  
+         const product_id = booking.product_id; 
+         const productQuery = {_id: ObjectId(product_id)}; 
+         const updatedDoc = {
+            $set: {
+               isBooked : true
+            }
+         }
+         const option = {
+            upsert: true, 
+         }
+
+         const product = await productsCollection.updateOne(productQuery, updatedDoc, option); 
+         console.log(product); 
+         res.send(result); 
+      })
+
+
+   
    }
    finally{
 
