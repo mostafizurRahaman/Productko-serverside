@@ -136,7 +136,7 @@ async function run(){
                   isAdvertised: {
                      $eq : true
                   }, 
-         }, 
+               }, 
                {
                   paymentStatus: {
                      $ne: true
@@ -200,6 +200,14 @@ async function run(){
          const product = await productsCollection.updateOne(productQuery, updatedDoc, option); 
          console.log(product); 
          res.send(result); 
+      })
+
+
+      app.get("/bookings", async(req,res)=>{
+         const email = req.query.email ; 
+         const query = {email:email}; 
+         const bookings  = await bookingsCollection.find(query).toArray(); 
+         res.send(bookings); 
       })
      
    
