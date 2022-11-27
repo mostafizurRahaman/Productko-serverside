@@ -74,9 +74,21 @@ async function run() {
 
       // create a user posting api:
       app.post("/users", async (req, res) => {
-         const user = req.body;
-         const result = await userCollections.insertOne(user);
-         res.send(result);
+         const newUser = req.body;
+         console.log(newUser); 
+          const query = {email: newUser.email}
+          const user = await userCollections.findOne(query); 
+          
+          console.log(user);
+          if(user?.email){
+               console.log('if')
+               return res.status(200).send({alreadyAdded : true}); 
+          }
+           
+            const result = await userCollections.insertOne(newUser);
+            res.send(result);  
+          
+        
       });
       // get  api for getting users role based :
       app.get("/users", async (req, res) => {
@@ -244,6 +256,14 @@ async function run() {
          }       
          
       });
+
+      //create use delete api: 
+      app.delete('/users/:id', async(req, res)=>{
+         const id = req.query.id; 
+         const query  = {_id: ObjectId(id)}; 
+         const result = await userCollections.deleteOne(query); 
+         res.send(result); 
+      })
 
       // for getting booking by filtering user email:
       app.get("/bookings", async (req, res) => {
