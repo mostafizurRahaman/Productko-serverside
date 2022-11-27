@@ -75,16 +75,11 @@ async function run() {
       // create a user posting api:
       app.post("/users", async (req, res) => {
          const newUser = req.body;
-         console.log(newUser); 
           const query = {email: newUser.email}
-          const user = await userCollections.findOne(query); 
-          
-          console.log(user);
+          const user = await userCollections.findOne(query);         
           if(user?.email){
-               console.log('if')
                return res.status(200).send({alreadyAdded : true}); 
           }
-           
             const result = await userCollections.insertOne(newUser);
             res.send(result);  
           
@@ -111,9 +106,7 @@ async function run() {
          const product = req.body;
          const  query = {email: product.email}; 
          const user = await userCollections.findOne(query); 
-         console.log(user); 
-         product.isVerified = user.isVerified || false, 
-         console.log(product); 
+         product.isVerified = user.isVerified || false; 
          const result = await productsCollection.insertOne(product);
          res.send(result);
       });
@@ -228,7 +221,6 @@ async function run() {
          const option = {
             upsert: true,
          };
-
          const product = await productsCollection.updateOne(
             productQuery,
             updatedDoc,
@@ -238,6 +230,48 @@ async function run() {
          res.send(result);
       });
 
+
+      //create a order delete api: 
+      app.delete('/bookings/:id', async(req ,res)=>{
+         const id = req.params.id ;
+         console.log(id); 
+         const order = req.body; 
+         const query = {_id: ObjectId(id)}; 
+         const options = {upsert: true}; 
+         const updatedDoc = {
+             $set: {
+               isBooked: false
+             }
+         }
+         const productId = order.product_id; 
+         const productQuery = {_id: ObjectId(productId)}; 
+
+         const updatedProduct = await productsCollection.updateOne(productQuery, updatedDoc, options); 
+         console.log(updatedProduct); 
+         if(updatedProduct.modifiedCount > 0){
+            const result = await bookingsCollection.deleteOne(query); 
+            res.send(result); 
+         }
+      })
+
+       // for getting booking by filtering user email:
+       app.get("/bookings", async (req, res) => {
+         const email = req.query.email;
+         const query = { email: email };
+         const bookings = await bookingsCollection.find(query).toArray();
+         res.send(bookings);
+      });
+
+      //create a get api for  single bookings : 
+      app.get('/bookings/:id', async(req, res)=>{
+         const id = req.params.id; 
+         const query = {_id: ObjectId(id)}; 
+         const booking = await bookingsCollection.findOne(query); 
+         res.send(booking); 
+      })
+
+
+      // update user for verification : 
       app.put("/users/:email", async (req, res) => {
          const email = req.params.email;
          console.log(email); 
@@ -265,13 +299,7 @@ async function run() {
          res.send(result); 
       })
 
-      // for getting booking by filtering user email:
-      app.get("/bookings", async (req, res) => {
-         const email = req.query.email;
-         const query = { email: email };
-         const bookings = await bookingsCollection.find(query).toArray();
-         res.send(bookings);
-      });
+     
    } finally {
    }
 }
