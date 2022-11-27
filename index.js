@@ -210,6 +210,27 @@ async function run(){
          res.send(bookings); 
       })
      
+
+
+
+
+   app.get('/users/:id', async(req, res)=>{
+      const id = req.params.id; 
+      const role = req.query.id; 
+      const query = {
+         $and: [
+            {
+               _id: ObjectId(id)
+            }, 
+            {
+               role : role, 
+            }
+         ]
+      }
+
+      const result = await userCollections.deleteOne(query); 
+      res.send(result);    
+   })
    
 
    
