@@ -37,7 +37,6 @@ app.use(cors());
 app.use(express.json());
 
 // mongodb configuration is added here :
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.4nkvsmn.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
    useNewUrlParser: true,
@@ -79,11 +78,10 @@ async function run() {
          const result = await userCollections.insertOne(user);
          res.send(result);
       });
-
       // get  api for getting users role based :
       app.get("/users", async (req, res) => {
          const role = req.query.role;
-         const query = {role: role};
+         const query = { role: role };
          const users = await userCollections.find(query).toArray();
          res.send(users);
       });
@@ -224,13 +222,24 @@ async function run() {
          res.send(result);
       });
 
-
-      app.put('/users/:id', async(req, res) =>{
-         const id = req.params.id ;
-         const query ={_id: ObjectId(id)}; 
-         const result = await userCollections.deleteOne(query); 
-         res.send(result); 
-      })
+      app.put("/users/:email", async (req, res) => {
+         const email = req.params.email;
+         console.log(email); 
+         const query = { email: email};
+         const updatedDoc = {
+            $set:{
+               isVerified: true, 
+            }
+         }
+         const options = {upsert: true}; 
+        
+         const products = await productsCollection.updateMany(query,updatedDoc, options)
+         if(products.modifiedCount){
+            const result = await userCollections.updateOne(query, updatedDoc, options);   
+            res.send(result);
+         }       
+         
+      });
 
       // for getting booking by filtering user email:
       app.get("/bookings", async (req, res) => {
