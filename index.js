@@ -171,6 +171,13 @@ async function run() {
 
       })
 
+      app.get('/reported', async(req, res) => {
+            const query = {isReported : true}; 
+            const products = await productsCollection.find(query).toArray(); 
+            res.send(products); 
+
+      })
+
       //get api for advertised products:
       app.get("/advertised", async (req, res) => {
          const query = {
