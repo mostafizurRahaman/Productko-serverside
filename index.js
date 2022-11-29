@@ -211,7 +211,7 @@ async function run() {
       });
 
       //get api for advertised products:
-      app.get("/advertised", verifyJWT, verifyBuyer, async (req, res) => {
+      app.get("/advertised", async (req, res) => {
          const query = {
             $and: [
                {
