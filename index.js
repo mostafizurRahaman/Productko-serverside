@@ -230,7 +230,7 @@ async function run() {
       });
 
       //get api for category based post :
-      app.get("/categories/:id", verifyJWT, async (req, res) => {
+      app.get("/categories/:id", async (req, res) => {
          const id = req.params.id;
          const query = {
             $and: [
