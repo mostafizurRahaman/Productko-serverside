@@ -90,7 +90,7 @@ async function run() {
          next();
       };
 
-      //create a get api for  categories:
+      //create a get api for  categories:  -----> all created
       app.get("/categories", async (req, res) => {
          const query = {};
          const categories = await categoryCollection.find(query).toArray();
@@ -245,7 +245,7 @@ async function run() {
             ],
          };
          const products = await productsCollection.find(query).toArray();
-         res.send(products);
+         res.send(products);2
       });
 
       // create a post api for bookings :
