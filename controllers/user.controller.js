@@ -3,6 +3,7 @@ const {
    findUserByEmailService,
    singUpService,
    findUserByIdService,
+   deleteUserServiceById,
 } = require("../services/user.service");
 
 exports.getAllUsers = async (req, res, next) => {
@@ -40,7 +41,7 @@ exports.signUp = async (req, res, next) => {
             data: userExist,
          });
       }
-      const user = await singUpService(req.data);
+      const user = await singUpService(req.body);
       res.status(200).send({
          status: "success",
          message: "user registered successfully",
@@ -81,7 +82,7 @@ exports.deleteUserById = async (req, res, next) => {
             message: "User didn't exist with this id",
          });
       }
-      const result = await deleteUserByService(id);
+      const result = await deleteUserServiceById(id);
       if (!result.deletedCount) {
          return res.status(400).send({
             status: "failed",
@@ -126,7 +127,7 @@ exports.updateUserById = async (req, res, next) => {
 
 exports.getJWT = async (req, res, next) => {
    try {
-      const { email } = req.body;
+      const { email } = req.query;
       const user = await findUserByEmailService(email);
       if (!user) {
          return res.status(401).send({
@@ -138,7 +139,7 @@ exports.getJWT = async (req, res, next) => {
       res.status(200).send({
          status: "success",
          message: "Your are logged In",
-         data: accessToken,
+         data: { accessToken },
       });
    } catch (err) {
       next(err);

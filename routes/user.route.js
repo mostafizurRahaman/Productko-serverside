@@ -4,7 +4,9 @@ const userController = require("../controllers/user.controller");
 const { verifyJWT } = require("../middlewares/verifyJW.middleware");
 
 router.route("/me").get(verifyJWT, userController.getMe);
-router.route("/").get(userController.getAllUsers).post(userController.signUp);
+router.route("/jwt").get(userController.getJWT);
+router.route("/sign-up").post(userController.signUp);
+router.route("/").get(userController.getAllUsers);
 
 router
    .route("/:id")
