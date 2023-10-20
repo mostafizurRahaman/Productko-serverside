@@ -42,6 +42,7 @@ exports.signUp = async (req, res, next) => {
          });
       }
       const user = await singUpService(req.body);
+      console.log(user);
       res.status(200).send({
          status: "success",
          message: "user registered successfully",
