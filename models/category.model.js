@@ -17,13 +17,13 @@ const categorySchema = mongoose.Schema({
       validate: [validator.isURL, "please provide a valid url"],
       required: [true, "please provide an URL"],
    },
-   // products: [
-   //    {
-   //       type: ObjectId,
-   //       required: [true, "please provide an product id"],
-   //       ref: "Products",
-   //    },
-   // ],
+   products: [
+      {
+         type: ObjectId,
+         required: [true, "please provide an product id"],
+         ref: "Product",
+      },
+   ],
 });
 
 const Category = mongoose.model("Category", categorySchema);
