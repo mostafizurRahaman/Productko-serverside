@@ -88,6 +88,13 @@ const productSchema = mongoose.Schema({
          message: `{VALUE} shouldn't be status`,
       },
    },
+   payStatus: {
+      type: String,
+      enum: {
+         values: ["paid", "unpaid"],
+         message: `{VALUE} shouldn't be payStatus`,
+      },
+   },
 });
 
 const Product = mongoose.model("Product", productSchema);
