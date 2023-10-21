@@ -44,3 +44,29 @@ module.exports.createBookingService = async (data) => {
 
    return result;
 };
+
+exports.getSingleBookingServiceById = async (id) => {
+   const booking = await Booking.findById(id).populate("buyerInfo.id");
+   return booking;
+};
+
+exports.deleteBookingServiceById = async (bookingId, productId, buyerId) => {
+   const result = await Booking.deleteOne({ _id: bookingId });
+   if (result.deletedCount) {
+      const updateProductStatus = await Product.findOneAndUpdate(
+         { _id: productId },
+         { $set: { status: "available" } },
+         { runValidators: true }
+      );
+
+      const updateBuyerBookings = await User.findOneAndUpdate(
+         { _id: buyerId },
+         { $pull: { bookings: bookingId } },
+         { runValidators: true }
+      );
+
+      console.log(result, updateBuyerBookings, updateProductStatus);
+   }
+
+   return result;
+};
