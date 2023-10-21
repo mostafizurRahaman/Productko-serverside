@@ -1,6 +1,7 @@
 const {
    getAllProductService,
    createProductService,
+   getProductByIdService,
 } = require("../services/product.service");
 
 exports.getAllProduct = async (req, res, next) => {
@@ -33,6 +34,34 @@ exports.createProduct = async (req, res, next) => {
       res.status(200).send({
          status: "success",
          message: "product created successfully",
+         data: product,
+      });
+   } catch (err) {
+      next(err);
+   }
+};
+
+exports.getSingleProductById = async (req, res, next) => {
+   try {
+      const { id } = req.params;
+      if (!id) {
+         return res.status(400).send({
+            status: "failed",
+            message: "please provide a product id",
+         });
+      }
+
+      const product = await getProductByIdService(id);
+      if (!product) {
+         return res.status(400).send({
+            status: "failed",
+            message: "Product didn't find product with this id",
+         });
+      }
+
+      res.status(200).send({
+         status: "success",
+         message: "Product found successfully",
          data: product,
       });
    } catch (err) {

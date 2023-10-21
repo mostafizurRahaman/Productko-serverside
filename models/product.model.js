@@ -54,6 +54,13 @@ const productSchema = mongoose.Schema({
          ref: "User",
          required: true,
       },
+      email: {
+         type: String,
+         trim: true,
+         lowercase: true,
+         validate: [validator.isEmail, "please provide a valid email"],
+         required: [true, "please provide an email address"],
+      },
       phone: {
          type: String,
          trim: true,

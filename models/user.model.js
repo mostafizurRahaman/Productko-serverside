@@ -42,6 +42,13 @@ const userSchema = mongoose.Schema(
             required: [true, "please provide a product id"],
          },
       ],
+      bookings: [
+         {
+            type: ObjectId,
+            ref: "Booking",
+            required: [true, "please provide a booking id"],
+         },
+      ],
    },
    {
       timestamps: true,
