@@ -3,7 +3,7 @@ const Category = require("../models/category.model");
 const User = require("../models/user.model");
 
 exports.getAllProductService = async (filter, queryObject) => {
-   console.log("product", filter, queryObject);
+   // console.log("product", filter, queryObject);
    const products = await Product.find(filter)
       .populate("sellerInfo.id")
       .skip(queryObject.skip)
@@ -33,7 +33,7 @@ exports.createProductService = async (data) => {
       { $push: { products: productId } },
       { runValidators: true }
    );
-   console.log(updateCategory, updateUser);
+   // console.log(updateCategory, updateUser);
 
    return result;
 };
@@ -52,7 +52,30 @@ exports.updateProductByIdService = async (id, data) => {
    return result;
 };
 
-exports.deleteProductByIdService = async (id) => {
-   const result = await Product.deleteOne({ _id: id });
+exports.deleteProductByIdService = async (productId, sellerId, categoryId) => {
+   const result = await Product.deleteOne({ _id: productId });
+   console.log(result);
+   if (result.deletedCount) {
+      //  update seller products :
+      const updateUserProduct = await User.updateOne(
+         { _id: sellerId },
+         { $pull: { products: productId } },
+         { runValidators: true }
+      );
+
+      //  update category Product:
+      const updateCategoryProducts = await Category.updateOne(
+         { _id: categoryId },
+         { $pull: { products: productId } },
+         { runValidators: true }
+      );
+
+      console.log(updateUserProduct);
+      console.log(updateCategoryProducts);
+      console.log(result);
+   }
    return result;
 };
+
+
+
