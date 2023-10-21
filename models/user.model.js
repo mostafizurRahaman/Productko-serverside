@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const { ObjectId } = mongoose.Schema.Types;
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -34,6 +35,20 @@ const userSchema = mongoose.Schema(
          required: [true, "please provide a role "],
       },
       isVerified: Boolean,
+      products: [
+         {
+            type: ObjectId,
+            ref: "Product",
+            required: [true, "please provide a product id"],
+         },
+      ],
+      bookings: [
+         {
+            type: ObjectId,
+            ref: "Booking",
+            required: [true, "please provide a booking id"],
+         },
+      ],
    },
    {
       timestamps: true,

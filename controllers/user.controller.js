@@ -152,7 +152,7 @@ exports.getMe = async (req, res, next) => {
       const email = req.user?.email;
       const user = await findUserByEmailService(email);
       if (!user) {
-         res.status(400).send({
+         return res.status(400).send({
             status: "failed",
             message: "You are not logged In",
          });
@@ -160,7 +160,12 @@ exports.getMe = async (req, res, next) => {
       res.status(200).send({
          status: "success",
          message: "Your are logged in",
-         data: user,
+         data: {
+            ...user.toObject(),
+            isAdmin: user.role === "admin",
+            isBuyer: user.role === "buyer",
+            isSeller: user.role === "seller",
+         },
       });
    } catch (err) {
       next(err);

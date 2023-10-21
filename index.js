@@ -245,7 +245,7 @@ async function run() {
             ],
          };
          const products = await productsCollection.find(query).toArray();
-         res.send(products);2
+         res.send(products);
       });
 
       // create a post api for bookings :
