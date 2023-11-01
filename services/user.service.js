@@ -1,7 +1,7 @@
 const User = require("../models/user.model");
 
 exports.getAllUserService = async (filter, queryObject) => {
-   console.log("user qeury", filter, queryObject);
+   // console.log("user qeury", filter, queryObject);
    const users = await User.find(filter)
       .skip(queryObject.skip)
       .limit(queryObject.limit);
