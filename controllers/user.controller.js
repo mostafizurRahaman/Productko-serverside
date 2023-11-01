@@ -1,9 +1,17 @@
 const {
+   updateCategoryProductServiceByIds,
+} = require("../services/category.service");
+const {
+   deleteManyProductsService,
+   getUnBookedProductIdsService,
+} = require("../services/product.service");
+const {
    getAllUserService,
    findUserByEmailService,
    singUpService,
    findUserByIdService,
    deleteUserServiceById,
+   updateUserServiceById,
 } = require("../services/user.service");
 
 exports.getAllUsers = async (req, res, next) => {
@@ -83,13 +91,24 @@ exports.deleteUserById = async (req, res, next) => {
             message: "User didn't exist with this id",
          });
       }
+      const { products } = user;
       const result = await deleteUserServiceById(id);
+      const unbookedIds = await getUnBookedProductIdsService(products);
+      console.log(unbookedIds);
+      const removeProducts = await deleteManyProductsService(unbookedIds);
+      console.log(removeProducts);
+      const categoryProducts = await updateCategoryProductServiceByIds(
+         unbookedIds
+      );
+      console.log(categoryProducts);
+
       if (!result.deletedCount) {
          return res.status(400).send({
             status: "failed",
             message: "User didn't deleted",
          });
       }
+
       res.status(200).send({
          status: "success",
          message: "user deleted successfully",
@@ -109,7 +128,7 @@ exports.updateUserById = async (req, res, next) => {
             message: "User didn't exist with this id",
          });
       }
-      const result = await updateUserByIdService(id);
+      const result = await updateUserServiceById(id);
       if (!result.modifiedCount) {
          return res.status(400).send({
             status: "failed",

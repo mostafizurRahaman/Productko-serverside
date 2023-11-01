@@ -13,7 +13,7 @@ module.exports.createCategoryService = async (data) => {
 
 module.exports.getCategoryByIdService = async (categoryId) => {
    // const category = await Category.findById(categoryId).populate("products");
-   const category = await Category.findById(categoryId)
+   const category = await Category.findById(categoryId);
    return category;
 };
 
@@ -28,5 +28,14 @@ module.exports.updateCategoryByIdService = async (categoryId, updatedData) => {
 
 module.exports.deleteCategoryByIdService = async (categoryId) => {
    const result = await Category.deleteOne({ _id: categoryId });
+   return result;
+};
+
+exports.updateCategoryProductServiceByIds = async (productIds) => {
+   const result = await Category.updateMany(
+      {},
+      { $pull: { products: { $in: productIds } } },
+      { runValidators: true }
+   );
    return result;
 };

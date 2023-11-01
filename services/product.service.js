@@ -77,5 +77,21 @@ exports.deleteProductByIdService = async (productId, sellerId, categoryId) => {
    return result;
 };
 
+exports.getUnBookedProductIdsService = async (products) => {
+   const unbookedProducts = await Product.find({
+      _id: { $in: products },
+      status: { $ne: "booked" },
+   }).select("_id");
+   console.log(unbookedProducts);
+   return unbookedProducts;
+};
 
+exports.deleteManyProductsService = async (productIds) => {
+   const result = await Product.deleteMany({
+      _id: { $in: productIds },
+      status: { $ne: "booked" },
+   });
+   console.log("unbooked product delete", result);
 
+   return result;
+};

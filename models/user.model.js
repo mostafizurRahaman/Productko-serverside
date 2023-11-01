@@ -55,15 +55,6 @@ const userSchema = mongoose.Schema(
    }
 );
 
-// userSchema.pre("save", function (next) {
-//    this.password = bcrypt.hashSync(this.password, 10);
-//    next();
-// });
-
-// userSchema.methods.comparePassword = (password, hash) => {
-//    return bcrypt.compareSync(password, hash);
-// };
-
 userSchema.methods.createJWT = function () {
    const payload = { email: this.email, role: this.role };
    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN, {
