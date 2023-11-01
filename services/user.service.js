@@ -39,5 +39,6 @@ exports.updateUserServiceById = async (id, data) => {
 
 exports.deleteUserServiceById = async (id) => {
    const result = await User.deleteOne({ _id: id });
+   console.log('delete user', result);
    return result;
 };
