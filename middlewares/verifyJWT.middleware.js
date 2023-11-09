@@ -5,7 +5,7 @@ require("dotenv").config();
 exports.verifyJWT = async (req, res, next) => {
    try {
       const token = req.headers?.authorization.split(" ")[1];
-      // console.log(token);
+      
       if (!token) {
          return res.status(401).send({
             status: "failed",
@@ -20,10 +20,11 @@ exports.verifyJWT = async (req, res, next) => {
       );
 
       req.user = decoded;
-      // console.log("decoded", decoded);
+     
       next();
    } catch (err) {
-      res.send({
+      
+      res.status(403).send({
          status: "failed",
          message: "UnAuthorized user",
       });

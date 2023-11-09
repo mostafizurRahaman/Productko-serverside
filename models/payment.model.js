@@ -9,6 +9,11 @@ const paymentSchema = mongoose.Schema(
          ref: "Product",
          required: true,
       },
+      booking: {
+         type: ObjectId,
+         ref: "Booking",
+         require: true,
+      },
       buyer: {
          type: ObjectId,
          ref: "User",

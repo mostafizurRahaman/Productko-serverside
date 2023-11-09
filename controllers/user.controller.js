@@ -50,7 +50,7 @@ exports.signUp = async (req, res, next) => {
          });
       }
       const user = await singUpService(req.body);
-      console.log(user);
+      // console.log(user);
       res.status(200).send({
          status: "success",
          message: "user registered successfully",
@@ -94,13 +94,13 @@ exports.deleteUserById = async (req, res, next) => {
       const { products } = user;
       const result = await deleteUserServiceById(id);
       const unbookedIds = await getUnBookedProductIdsService(products);
-      console.log(unbookedIds);
+      // console.log(unbookedIds);
       const removeProducts = await deleteManyProductsService(unbookedIds);
-      console.log(removeProducts);
+      // console.log(removeProducts);
       const categoryProducts = await updateCategoryProductServiceByIds(
          unbookedIds
       );
-      console.log(categoryProducts);
+      // console.log(categoryProducts);
 
       if (!result.deletedCount) {
          return res.status(400).send({
@@ -121,6 +121,7 @@ exports.deleteUserById = async (req, res, next) => {
 exports.updateUserById = async (req, res, next) => {
    try {
       const { id } = req.params;
+      console.log(id, req.body);
       const user = await findUserByIdService(id);
       if (!user) {
          return res.status(400).send({
@@ -128,7 +129,7 @@ exports.updateUserById = async (req, res, next) => {
             message: "User didn't exist with this id",
          });
       }
-      const result = await updateUserServiceById(id);
+      const result = await updateUserServiceById(id, req.body);
       if (!result.modifiedCount) {
          return res.status(400).send({
             status: "failed",
