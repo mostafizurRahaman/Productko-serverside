@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.controller");
-const { verifyJWT } = require("../middlewares/verifyJW.middleware");
+const { verifyJWT } = require("../middlewares/verifyJWT.middleware");
 
 router.route("/me").get(verifyJWT, userController.getMe);
-
-
 
 router.route("/jwt").get(userController.getJWT);
 router.route("/sign-up").post(userController.signUp);

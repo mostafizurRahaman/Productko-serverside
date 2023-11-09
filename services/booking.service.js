@@ -46,7 +46,9 @@ module.exports.createBookingService = async (data) => {
 };
 
 exports.getSingleBookingServiceById = async (id) => {
-   const booking = await Booking.findById(id).populate("buyerInfo.id");
+   const booking = await Booking.findById(id)
+      .populate("buyerInfo.id")
+      .populate("product");
    return booking;
 };
 
